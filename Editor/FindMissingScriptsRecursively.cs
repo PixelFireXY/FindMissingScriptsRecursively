@@ -15,7 +15,7 @@ public class FindMissingScriptsRecursively : EditorWindow
     private static int _missingCount;
     private static int _removedCount;
 
-    private static bool autoRemove = true;
+    private static bool autoRemove = false;
 
     private readonly string instructionsText = "WARNING: If you have to remove the missing components, \nand the gameobject in the scene is a prefab, \nmake sure to do it on the asset prefab or unpack the prefab in the scene, \notherwise you will lose the changes when you press play.";
 
