@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEditor;
 using System.Linq;
 using UnityEditor.SceneManagement;
@@ -21,7 +21,7 @@ public class FindMissingScriptsRecursively : EditorWindow
 
     /******************** Editor ********************/
 
-    [MenuItem("Window/FindMissingScriptsRecursively")]
+    [MenuItem("Ovr Tools/Find missing scripts recursively/Open window")]
     public static void ShowWindow()
     {
         EditorWindow.GetWindow(typeof(FindMissingScriptsRecursively));
@@ -46,6 +46,8 @@ public class FindMissingScriptsRecursively : EditorWindow
 
         if (_goCount > 0)
         {
+            GUI.enabled = false;
+
             EditorGUILayout.TextField($"GameObjects found: {_goCount}");
 
             EditorGUILayout.TextField($"Components found: {_componentsCount}");
@@ -58,6 +60,8 @@ public class FindMissingScriptsRecursively : EditorWindow
         GUILayout.Space(100);
 
         EditorGUILayout.TextArea(instructionsText, EditorStyles.textField, GUILayout.ExpandHeight(true));
+
+        GUI.enabled = false;
     }
 
     /******************** Components management ********************/
@@ -87,17 +91,22 @@ public class FindMissingScriptsRecursively : EditorWindow
         int missingComponentsCount = components.Where(x => x == null).Count();
         _missingCount += missingComponentsCount;
 
-        // Create the gameobject path in the project
         var s = g.name;
         var t = g.transform;
 
-        while (t.parent != null)
+        for (int i = 0; i < components.Length; i++)
         {
-            s = t.parent.name + "/" + s;
-            t = t.parent;
+            if (components[i] == null)
+            {
+                // Create the gameobject path in the project
+                while (t.parent != null)
+                {
+                    s = t.parent.name + "/" + s;
+                    t = t.parent;
+                }
+                Debug.Log($"{s} has a missing script", g);
+            }
         }
-
-        Debug.Log($"{s} has a missing script", g);
 
         // If the auto remove is active remove the component
         if (missingComponentsCount > 0 && autoRemove)
